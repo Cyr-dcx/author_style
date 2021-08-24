@@ -1,12 +1,15 @@
 import os
 
+actual=os.getcwd()
+path=os.path.join(actual, 'raw_data', 'fichiers_txt', 'comp_aut')
+
 #clean data
 def clean_texts():
-    path='/Users/lilouconquet/code/cyrdecx/author_style/raw_data'
+
     book_names=[f for f in os.listdir(path) if f.endswith('.txt')]
 
     for book in book_names:
-        with open(f'/Users/lilouconquet/code/cyrdecx/author_style/raw_data/{book}') as f:
+        with open(os.path.join(path, book)) as f:
             lines = f.readlines()
         #remove begining
         for line in lines:
@@ -16,14 +19,14 @@ def clean_texts():
                 break
 
         #remove ending
-        index =index=int(len(lines)*(1-0.1))
+        index =int(len(lines)*(1-0.1))
         del lines[index:len(lines)]
 
         #remove spaces at the end and begining
         lines=''.join(lines).strip()
 
         #create cleaned texts
-        file=open(f'/Users/lilouconquet/code/cyrdecx/author_style/author_style/data/{book}', 'w')
+        file=open(os.path.join(actual, 'author_style', 'data', book), 'w')
         file.write(lines)
 
 if __name__=='__main__':
