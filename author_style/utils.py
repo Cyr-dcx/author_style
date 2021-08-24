@@ -20,7 +20,7 @@ def clean_texts():
                 if line in ['I\n', '1\n', 'Gallimard\n', 'PREMIÈRE PARTIE\n', 'CHAPITRE PREMIER\n', 'Chapitre 1\n', '> Digitalizzazione a cura di Yorikarus @ forum.tntvillage.scambioetico.org <\n', 'LES CHEVAUX\n', 'SAINT-JUST\n']:
                     index=lines.index(line)
                     del lines[0:index+1]
-                    break
+                     break
 
             #remove ending
             index =int(len(lines)*(1-0.1))
