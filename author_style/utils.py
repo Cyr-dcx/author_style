@@ -96,7 +96,7 @@ def csv_to_dataframes(output='ps'):
 
     for book in books:
         ## 1.
-        df_temp = pd.read_csv(os.path.join(root_path,'author_style','data', 'comp_aut',book), header=None).T
+        df_temp = pd.read_csv(os.path.join(root_path,'author_style','data', 'comp_aut',book), header=None)
         ## 2.
         df_temp['author'] = authors[books.index(book)]
         df_temp['title'] = titles[books.index(book)]
