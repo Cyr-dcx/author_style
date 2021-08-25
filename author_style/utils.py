@@ -45,7 +45,7 @@ def clean_texts():
             file = open(os.path.join(
                 root_path, 'author_style', 'data', folder,
                 ''.join([book.strip('.txt'),
-                         '.csv']).strip('EBOOK-').strip('Ebook-')),
+                        '.csv'])),
                         'w',
                         newline='')
             writer = csv.writer(file)
