@@ -21,12 +21,12 @@ def preprocess(text,
                lemmatize=False,
                language='french'):
 
+    if numbers:
+        text = ''.join(char for char in text if not char.isdigit())
     if punctuation:
         text = ''.join(char for char in text if not char in string.punctuation)
     if lower_case:
         text = text.lower()
-    if numbers:
-        text = ''.join(char for char in text if not char.isdigit())
     if accents:
         text = unidecode.unidecode(text)
     if remove_stopwords:
@@ -77,10 +77,10 @@ def vocab_richness(text):
 
 def features(df):
     df['preprocess_data'] = df['text'].apply(lambda x: preprocess(x))
-    df['word_count'] = df['text'].apply(lambda x: len(x.split()))
+    #df['word_count'] = df['text'].apply(lambda x: len(x.split()))
     df['unique_word_count'] = df['text'].apply(
-        lambda x: len(np.unique(x.split())))
-    df['sentences_count'] = df['text'].apply(lambda x: x.count('.'))
-    df['stopwords_count'] = df['text'].apply(lambda x: stopword_count(x))
+        lambda x: len(np.unique(x.split()))/ len(x.split()))
+    df['sentences_count'] = df['text'].apply(lambda x: x.count('.')/len(x.split()))
+    df['stopwords_count'] = df['text'].apply(lambda x: stopword_count(x)/len(x.split()))
     df['vocab richness'] = df['text'].apply(vocab_richness)
     return df
