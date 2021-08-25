@@ -5,11 +5,11 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 import re
 import unidecode
-import spacy
+#import spacy
 import numpy as np
 import pandas as pd
 
-nlp = spacy.load("fr_core_news_sm")
+#nlp = spacy.load("fr_core_news_sm")
 
 
 def preprocess(text,
@@ -46,18 +46,18 @@ def add_cleaned_column(df):
     return df
 
 
-def return_token(sentence):
+"""def return_token(sentence):
     # Tokeniser la phrase
     doc = nlp(sentence)
     # Retourner le texte de chaque token
-    return [X.text for X in doc]
+    return [X.text for X in doc]"""
 
 
-def return_word_embedding(sentence):
+"""def return_word_embedding(sentence):
     # Vectoriser la phrase
     doc = nlp(sentence)
     # Retourner le vecteur lié à chaque token
-    return [(X.vector) for X in doc]
+    return [(X.vector) for X in doc]"""
 
 
 def stopword_count(text):
