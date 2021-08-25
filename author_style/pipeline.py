@@ -10,10 +10,10 @@ from sklearn.model_selection import train_test_split
 df = csv_to_dataframes(output='p')
 df = features(df)
 
+print(df.columns)
+
 #selection de X et y dans le dataframe df
-X = df['preprocess_text','vocab_richness',
-       "word_count", "unique_word_count",
-       "sentences_count", "stopwords_count"]
+X = df[['preprocess_data','unique_word_count', 'sentences_count', 'stopwords_count','vocab richness']]
 y = df["author"]
 
 # Encode categorical variables
@@ -22,14 +22,15 @@ y = cat_transformer.fit_transform(y)
 
 # transform X features
 column_trans = ColumnTransformer(
-    [('vec', TfidfVectorizer(), 'preprocess_text')], remainder='passthrough')
+    [('vec', TfidfVectorizer(), 'preprocess_data')], remainder='passthrough')
 
-X_combined = column_trans.fit_transform(X[['preprocess_text','vocab_richness',
-                                           "word_count", "unique_word_count",
-                                           "sentences_count", "stopwords_count"]])
+X_combined = column_trans.fit_transform(X[[
+    'preprocess_data', 'unique_word_count', 'sentences_count',
+    'stopwords_count', 'vocab richness'
+]])
 
 #split date
-X_train, X_test, y_train, y_test = train_test_split(X_combined, y, test_size=0.33, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X_combined, y, test_size=0.30, random_state=42)
 
 #model
 
