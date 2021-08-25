@@ -72,15 +72,39 @@ def vocab_richness(text):
     total_length = len(tokens)
     unique_words = set(tokens)
     unique_word_length = len(unique_words)
-    return unique_word_length / total_length
+    if total_length > 0:
+        return unique_word_length / total_length
+    else:
+        return 0
+
+def sentence_count(x):
+    if len(x.split()) >0:
+        return x.count('.') / len(x.split())
+    else:
+        return 0
 
 
-def features(df):
-    df['preprocess_data'] = df['text'].apply(lambda x: preprocess(x))
-    #df['word_count'] = df['text'].apply(lambda x: len(x.split()))
-    df['unique_word_count'] = df['text'].apply(
-        lambda x: len(np.unique(x.split()))/ len(x.split()))
-    df['sentences_count'] = df['text'].apply(lambda x: x.count('.')/len(x.split()))
-    df['stopwords_count'] = df['text'].apply(lambda x: stopword_count(x)/len(x.split()))
-    df['vocab richness'] = df['text'].apply(vocab_richness)
-    return df
+def features(df, output='p'):
+    if output=='p':
+
+        df['preprocess_data'] = df['text'].apply(lambda x: preprocess(x))
+        df['word_ratio'] = df['text'].apply(lambda x: len(x.split()))
+        df['unique_word'] = df['text'].apply(
+        lambda x: 0 if len(x.split())==0 else (len(np.unique(x.split()))/ len(x.split())))
+
+        df['sentences_ratio'] = df.apply(lambda x: 0 if len(x.split())==0 else x.count('.') / len(x.split()))
+        df['stopwords_ratio'] = df['text'].apply(lambda x: 0 if len(x.split(
+    )) == 0 else (stopword_count(x) / len(x.split())))
+        df['vocab richness'] = df['text'].apply(vocab_richness)
+        return df
+
+    elif output=='s':
+        df['preprocess_data'] = df['text'].apply(lambda x: preprocess(x))
+        df['word_ratio'] = df['text'].apply(lambda x: len(x.split()))
+        df['unique_word_ratio'] = df['text'].apply(
+        lambda x: 0 if len(x.split())==0 else (len(np.unique(x.split()))/ len(x.split())))
+
+        df['stopwords_ratio'] = df['text'].apply(lambda x: 0 if len(x.split(
+    )) == 0 else (stopword_count(x) / len(x.split())))
+        df['vocab richness'] = df['text'].apply(vocab_richness)
+        return df
