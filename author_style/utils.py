@@ -19,8 +19,8 @@ def clean_texts():
         for book in book_names:
             with open(os.path.join(path, book)) as f:
                 lines = f.readlines()
-            #remove begining and ending (10 %)
-            ten_percent = int(len(lines) * 0.1)
+            #remove begining and ending (15 %)
+            ten_percent = int(len(lines) * 0.15)
             del lines[len(lines) - ten_percent:len(lines)]
             del lines[0:ten_percent]
 
@@ -28,6 +28,8 @@ def clean_texts():
             lenghts = {}
 
             for line in lines:
+                if len(line)<= 100:
+                    continue
                 index = lines.index(line)
                 lenght = len(line)
                 lenghts[index] = lenght
