@@ -2,8 +2,9 @@ import os
 import pandas as pd
 import csv
 
-actual = os.getcwd()
-path_folder = os.path.join(actual, 'raw_data')
+
+root_path = os.path.dirname(os.path.dirname(__file__))
+path_folder = os.path.join(root_path, 'raw_data')
 
 
 #clean data
@@ -40,7 +41,7 @@ def clean_texts():
 
             #create cleaned texts
             file = open(os.path.join(
-                actual, 'author_style', 'data', folder,
+                root_path, 'author_style', 'data', folder,
                 ''.join([book.strip('.txt'),
                          '.csv']).strip('EBOOK-').strip('Ebook-')),
                         'w',
@@ -49,7 +50,7 @@ def clean_texts():
             writer.writerow(new_lines)
 
 
-def csv_to_dataframes():
+def csv_to_dataframes(output='ps'):
     ''' Returns 2 dataframes
 
     Extracts 1 dataframe with paragraphs and 1 dataframe with
@@ -63,10 +64,15 @@ def csv_to_dataframes():
 
     # Get csv path ; the csv files are arrays of pre-selected* paragraphs
     # that were extracted from raw txt files by * (cf. Lilou)
-    csv_path = os.path.join(actual,'..','data')
+    csv_path= os.path.join(root_path, 'author_style', 'data',
+                                     'comp_aut')
+
 
     # Create a list of book names
-    books=[csv_file for csv_file in os.listdir(csv_path) if csv_file.endswith('.csv')]
+    books = [
+        csv_file for csv_file in os.listdir(csv_path)
+        if csv_file.endswith('.csv')]
+
 
     # Parsing csv file names to get author names, book titles and publishing date
     # and putting these elements in lists that have the same index as the list 'books'
@@ -85,7 +91,7 @@ def csv_to_dataframes():
 
     for book in books:
         ## 1.
-        df_temp = pd.read_csv(os.path.join(actual,'..','data',book), header=None).T
+        df_temp = pd.read_csv(os.path.join(root_path,'author_style','data', 'comp_aut',book), header=None).T
         ## 2.
         df_temp['author'] = authors[books.index(book)]
         df_temp['title'] = titles[books.index(book)]
@@ -96,7 +102,7 @@ def csv_to_dataframes():
     ## Concatenate all dataframes in 'dfs' to get
     ## a single dataframe with paragraphs from all books
     df_paragraphs = pd.concat([df for df in dfs], ignore_index = True, axis=0)
-    df_paragraphs.rename(mapper={0:"text"}, axis=1, inplace=True) # NB: The column name for the actual text is explicitly called in a preprocessing function, it must be 'text'
+    df_paragraphs.rename(mapper={0:"text"}, axis=1, inplace=True) # NB: The column name for the root_path text is explicitly called in a preprocessing function, it must be 'text'
 
     ###############y########################################
     ########  convert df_paragraphs to df_sentences  #######
@@ -114,9 +120,9 @@ def csv_to_dataframes():
 
         # Prepare columns with fixed values for Author_name, Title and Book_date,
         # to assign each sentence of a paragraph to the same Author_name, Title and Book_date.
-        author_temp = [df_paragraphs.Author[i] for k in range(len(sentences))]
-        title_temp = [df_paragraphs.Title[i] for k in range(len(sentences))]
-        date_temp = [df_paragraphs.Book_date[i] for k in range(len(sentences))]
+        author_temp = [df_paragraphs.author[i] for k in range(len(sentences))]
+        title_temp = [df_paragraphs.title[i] for k in range(len(sentences))]
+        date_temp = [df_paragraphs.book_date[i] for k in range(len(sentences))]
 
         # Concatenate the 4 previous lists to build a single dataframe
         # containing all sentences of the i-th paragraph of df_paragraphs
@@ -130,8 +136,12 @@ def csv_to_dataframes():
     df_sentences = pd.concat(dfs, ignore_index = True, axis=0)
     df_sentences.rename(mapper={0:"text", 1: 'author', 2:'title', 3 : 'book_date'}, axis=1, inplace=True)
 
-
-    return df_paragraphs, df_sentences
+    if output == 'p':
+        return df_paragraphs
+    if output == 's':
+        return df_sentences
+    if output == 'ps':
+        return df_paragraphs, df_sentences
 
 if __name__=='__main__':
     clean_texts()
