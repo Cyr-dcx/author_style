@@ -39,17 +39,20 @@ def clean_texts():
 
             new_lines = []
             for index in indexes:
-                new_lines.append(lines[index])
+                new_lines.append(lines[index].strip("\n"))
 
             #create cleaned texts
-            file = open(os.path.join(
+            with open(os.path.join(
                 root_path, 'author_style', 'data', folder,
                 ''.join([book.strip('.txt'),
-                        '.csv'])),
-                        'w',
-                        newline='')
-            writer = csv.writer(file)
-            writer.writerow(new_lines)
+                         '.csv'])),
+                        'w') as file:
+
+                writer = csv.writer(file)
+
+                for new_line in new_lines:
+                    writer.writerow([new_line])
+
 
 
 def csv_to_dataframes(output='ps'):

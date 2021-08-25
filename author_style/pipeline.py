@@ -7,7 +7,6 @@ from sklearn.preprocessing import LabelEncoder
 from author_style.utils import csv_to_dataframes
 from sklearn.model_selection import train_test_split
 
-
 df = csv_to_dataframes(output='p')
 df = features(df)
 
