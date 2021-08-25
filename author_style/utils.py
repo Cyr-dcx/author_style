@@ -45,13 +45,14 @@ def clean_texts():
             with open(os.path.join(
                 root_path, 'author_style', 'data', folder,
                 ''.join([book.strip('.txt'),
-                         '.csv']).strip('EBOOK-').strip('Ebook-')),
+                         '.csv'])),
                         'w') as file:
 
                 writer = csv.writer(file)
 
                 for new_line in new_lines:
                     writer.writerow([new_line])
+
 
 
 def csv_to_dataframes(output='ps'):
