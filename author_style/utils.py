@@ -1,38 +1,53 @@
 import os
 import pandas as pd
+import csv
 
-actual=os.getcwd()
-path_folder=os.path.join(actual, 'raw_data')
+actual = os.getcwd()
+path_folder = os.path.join(actual, 'raw_data')
+
 
 #clean data
 def clean_texts():
 
-    folders=[f for f in os.listdir(path_folder)]
+    folders = [f for f in os.listdir(path_folder)]
     for folder in folders:
-        path=os.path.join(path_folder, folder)
+        path = os.path.join(path_folder, folder)
 
-        book_names=[f for f in os.listdir(path) if f.endswith('.txt')]
+        book_names = [f for f in os.listdir(path) if f.endswith('.txt')]
 
         for book in book_names:
             with open(os.path.join(path, book)) as f:
                 lines = f.readlines()
-            #remove begining
+            #remove begining and ending (10 %)
+            ten_percent = int(len(lines) * 0.1)
+            del lines[len(lines) - ten_percent:len(lines)]
+            del lines[0:ten_percent]
+
+            #keeping the 300 biggest paragraphs
+            lenghts = {}
+
             for line in lines:
-                if line in ['I\n', '1\n', 'Gallimard\n', 'PREMIÈRE PARTIE\n', 'CHAPITRE PREMIER\n', 'Chapitre 1\n', '> Digitalizzazione a cura di Yorikarus @ forum.tntvillage.scambioetico.org <\n', 'LES CHEVAUX\n', 'SAINT-JUST\n']:
-                    index=lines.index(line)
-                    del lines[0:index+1]
-                    break
+                index = lines.index(line)
+                lenght = len(line)
+                lenghts[index] = lenght
+            indexes = list(k for k, v in sorted(lenghts.items(),
+                                                key=lambda item: item[1],
+                                                reverse=True))[0:300]
 
-            #remove ending
-            index =int(len(lines)*(1-0.1))
-            del lines[index:len(lines)]
-
-            #remove spaces at the end and begining
-            lines=''.join(lines).strip()
+            new_lines = []
+            for index in indexes:
+                new_lines.append(lines[index])
 
             #create cleaned texts
-            file=open(os.path.join(actual, 'author_style', 'data',folder, book), 'w')
-            file.write(lines)
+            file = open(os.path.join(
+                actual, 'author_style', 'data', folder,
+                ''.join([book.strip('.txt'),
+                         '.csv']).strip('EBOOK-').strip('Ebook-')),
+                        'w',
+                        newline='')
+            writer = csv.writer(file)
+            writer.writerow(new_lines)
+
 
 def csv_to_dataframes():
     ''' Returns 2 dataframes
