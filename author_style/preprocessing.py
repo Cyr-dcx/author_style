@@ -89,10 +89,10 @@ def features(df, output='p'):
 
         df['preprocess_data'] = df['text'].apply(lambda x: preprocess(x))
         df['word_ratio'] = df['text'].apply(lambda x: len(x.split()))
-        df['unique_word'] = df['text'].apply(
+        df['unique_word_ratio'] = df['text'].apply(
         lambda x: 0 if len(x.split())==0 else (len(np.unique(x.split()))/ len(x.split())))
 
-        df['sentences_ratio'] = df.apply(lambda x: 0 if len(x.split())==0 else x.count('.') / len(x.split()))
+        df['sentences_ratio'] = df['text'].apply(lambda x: 0 if len(x.split())==0 else x.count('.') / len(x.split()))
         df['stopwords_ratio'] = df['text'].apply(lambda x: 0 if len(x.split(
     )) == 0 else (stopword_count(x) / len(x.split())))
         df['vocab richness'] = df['text'].apply(vocab_richness)
