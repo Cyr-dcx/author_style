@@ -11,6 +11,9 @@ scikit-learn
 spacy
 unidecode
 nltk
+transformers
+fastapi
+uvicorn
 
 # tests/linter
 black
