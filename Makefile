@@ -59,3 +59,15 @@ pypi:
 
 run_api:
 	uvicorn api.fast:app --reload  # load web server with code autoreload
+
+# build_amd:
+# 	docker buildx build --platform linux/amd64 -t api_amd64 --load .
+
+build_amd_prod:
+	docker buildx build --platform linux/amd64 -t eu.gcr.io/author-style/api_amd64 --load .
+
+push:
+	docker push eu.gcr.io/author-style/api_amd64
+
+deploy:
+	gcloud run deploy --image eu.gcr.io/author-style/api_amd64 --platform managed --region europe-west1

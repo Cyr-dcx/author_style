@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from numpy.lib.index_tricks import AxisConcatenator
 import pandas as pd
 from author_style.utils import tokenizer_word2vec
-import joblib
 import numpy as np
 from author_style.utils import embedding
 from author_style.preprocessing import preprocess
