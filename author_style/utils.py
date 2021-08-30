@@ -54,9 +54,58 @@ def clean_texts():
                     writer.writerow([new_line])
 
 
+def clean_texts2():
 
-def csv_to_dataframes(output='ps'):
+    folders = [f for f in os.listdir(path_folder)]
+    for folder in folders:
+        path = os.path.join(path_folder, folder)
+
+        book_names = [f for f in os.listdir(path) if f.endswith('.txt')]
+
+        for book in book_names:
+            with open(os.path.join(path, book)) as f:
+                lines = f.readlines()
+            #remove begining and ending (15 %)
+            ten_percent = int(len(lines) * 0.15)
+            del lines[len(lines) - ten_percent:len(lines)]
+            del lines[0:ten_percent]
+
+            #keeping the 300 biggest paragraphs
+            lenghts = {}
+
+            for line in lines:
+                if len(line) <= 100:
+                    continue
+                index = lines.index(line)
+                lenght = len(line)
+                lenghts[index] = lenght
+            indexes = list(k for k, v in sorted(lenghts.items(),
+                                                key=lambda item: item[1],
+                                                reverse=True))[0:400]
+
+            new_lines = []
+            for index in indexes:
+                new_lines.append(lines[index].strip("\n"))
+
+            #create cleaned texts
+            with open(
+                    os.path.join(root_path, 'author_style', 'data', folder,
+                                 ''.join([book.strip('.txt'), '.csv'])),
+                    'w') as file:
+
+                writer = csv.writer(file)
+
+                for new_line in new_lines:
+                    writer.writerow([new_line])
+
+
+def csv_to_dataframes(output='ps',folder='comp_aut'):
     ''' Returns 2 dataframes
+    args:
+    output = 'ps' - returns 2 dataframes
+    (='p' for paragraphs, ='s' for sentences)
+    folder = 'txt_ajar' returns Ajar's texts
+
 
     Extracts 1 dataframe with paragraphs and 1 dataframe with
     sentences from a csv file. The csv files names' are parsed
@@ -70,7 +119,7 @@ def csv_to_dataframes(output='ps'):
     # Get csv path ; the csv files are arrays of pre-selected* paragraphs
     # that were extracted from raw txt files by * (cf. Lilou)
     csv_path= os.path.join(root_path, 'author_style', 'data',
-                                     'comp_aut')
+                                     folder)
 
 
     # Create a list of book names
