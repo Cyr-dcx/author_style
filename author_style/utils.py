@@ -1,6 +1,14 @@
 import os
 import pandas as pd
 import csv
+#from transformers import AutoTokenizer
+from nltk.stem.porter import PorterStemmer
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import nltk
+from nltk.corpus import wordnet
+import numpy as np
+
 
 
 root_path = os.path.dirname(os.path.dirname(__file__))
@@ -54,9 +62,58 @@ def clean_texts():
                     writer.writerow([new_line])
 
 
+def clean_texts_large():
 
-def csv_to_dataframes(output='ps'):
+    folders = [f for f in os.listdir(path_folder)]
+    for folder in folders:
+        path = os.path.join(path_folder, folder)
+
+        book_names = [f for f in os.listdir(path) if f.endswith('.txt')]
+
+        for book in book_names:
+            with open(os.path.join(path, book)) as f:
+                lines = f.readlines()
+            #remove begining and ending (15 %)
+            ten_percent = int(len(lines) * 0.15)
+            del lines[len(lines) - ten_percent:len(lines)]
+            del lines[0:ten_percent]
+
+            #keeping the 300 biggest paragraphs
+            lenghts = {}
+
+            for line in lines:
+                if len(line) <= 100:
+                    continue
+                index = lines.index(line)
+                lenght = len(line)
+                lenghts[index] = lenght
+            indexes = list(k for k, v in sorted(lenghts.items(),
+                                                key=lambda item: item[1],
+                                                reverse=True)) #[0:400]
+
+            new_lines = []
+            for index in indexes:
+                new_lines.append(lines[index].strip("\n"))
+
+            #create cleaned texts
+            with open(
+                    os.path.join(root_path, 'author_style', 'data', folder,
+                                 ''.join([book.strip('.txt'), '.csv'])),
+                    'w') as file:
+
+                writer = csv.writer(file)
+
+                for new_line in new_lines:
+                    writer.writerow([new_line])
+
+
+def csv_to_dataframes(output='ps', folder='comp_aut', MAX_LEN=512):
     ''' Returns 2 dataframes
+    args:
+    output = 'ps' - returns 2 dataframes
+    (='p' for paragraphs, ='s' for sentences)
+    folder = 'txt_ajar' returns Ajar's texts
+
 
     Extracts 1 dataframe with paragraphs and 1 dataframe with
     sentences from a csv file. The csv files names' are parsed
@@ -70,7 +127,7 @@ def csv_to_dataframes(output='ps'):
     # Get csv path ; the csv files are arrays of pre-selected* paragraphs
     # that were extracted from raw txt files by * (cf. Lilou)
     csv_path= os.path.join(root_path, 'author_style', 'data',
-                                     'comp_aut')
+                                     folder)
 
 
     # Create a list of book names
@@ -141,12 +198,102 @@ def csv_to_dataframes(output='ps'):
     df_sentences = pd.concat(dfs, ignore_index = True, axis=0)
     df_sentences.rename(mapper={0:"text", 1: 'author', 2:'title', 3 : 'book_date'}, axis=1, inplace=True)
 
+    ###############y########################################
+    ########   convert df_paragraphs to df_chunks    ########
+    #######################################b################
+
+    # Initializing a list of dataframes
+    dfs = []
+
+    # Function to split sentences into chunks of fixed word_count
+    def split_sentence(sentence, size):
+        res = []
+        for i in range (0, len(sentence), size):
+            res.append(sentence[i:i+size])
+        return res
+
+    for title in df_paragraphs.title.unique().tolist():
+        new_list = " [sep] ".join(df_paragraphs[df_paragraphs.title == str(title)].text.to_list()).split(' ')
+        chunked_new_list = split_sentence(new_list, MAX_LEN)
+
+        texts = [" ".join(chunk) for chunk in chunked_new_list]
+
+        # Prepare columns with fixed values for Author_name, Title and Book_date,
+        # to assign each sentence of a paragraph to the same Author_name, Title and Book_date.
+
+        author_temp = [list(df_paragraphs[df_paragraphs.title == str(title)].author.unique())[0]
+                            for k in range(len(chunked_new_list))]
+        title_temp = [str(title) for k in range(len(chunked_new_list))]
+        date_temp = [list(df_paragraphs[df_paragraphs.title == str(title)].book_date.unique())[0]
+                            for k in range(len(chunked_new_list))]
+        # Concatenate the 4 previous lists to build a single dataframe
+        # containing all sentences of the i-th paragraph of df_paragraphs
+        data = [texts, author_temp, title_temp, date_temp]
+        df_temp = pd.DataFrame(data).T
+
+        # Build the list of dataframes containing all sentences of our dataset
+        dfs.append(df_temp)
+
+    df_chunks = pd.concat(dfs, ignore_index = True, axis=0)
+    df_chunks.rename(mapper={0:"text", 1: 'author', 2:'title', 3 : 'book_date'}, axis=1, inplace=True)
+
     if output == 'p':
         return df_paragraphs
     if output == 's':
         return df_sentences
     if output == 'ps':
         return df_paragraphs, df_sentences
+    if output == 'c':
+        return df_chunks
+
+"""def tokenizer(X):
+    LONGUEUR_MAX_PARAGRAPH = 512
+    tokenizer = AutoTokenizer.from_pretrained('jplu/tf-camembert-base')
+    X = tokenizer(X,
+                                       max_length=LONGUEUR_MAX_PARAGRAPH,
+                                       padding="max_length",
+                                       truncation=True,
+                                       return_tensors='tf',
+                                       add_special_tokens=True)
+
+    return X
+"""
+
+def tokenizer_word2vec(X):
+    try:
+        nltk.data.find('punkt')
+        nltk.data.find('stopwords')
+        nltk.data.find('averaged_perceptron_tagger')
+        nltk.data.find('wordnet')
+    except LookupError:
+        nltk.download('punkt', quiet=True)
+        nltk.download('stopwords', quiet=True)
+        nltk.download('averaged_perceptron_tagger', quiet=True)
+        nltk.download('wordnet', quiet=True)
+
+    X_token = [word_tokenize(list(elem)[0]) for elem in X]
+    return X_token
+
+def embed_sentence(word2vec, sentence):
+    # $CHALLENGIFY_BEGIN
+    embedded_sentence = []
+    for word in sentence:
+        if word in word2vec.wv:
+            embedded_sentence.append(word2vec.wv[word])
+
+    return np.array(embedded_sentence)
+
+
+def embedding(word2vec, sentences):
+    # $CHALLENGIFY_BEGIN
+    embed = []
+
+    for sentence in sentences:
+        embedded_sentence = embed_sentence(word2vec, sentence)
+        embed.append(embedded_sentence)
+
+    return embed
+
 
 if __name__=='__main__':
     clean_texts()

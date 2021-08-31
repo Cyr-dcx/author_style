@@ -1,0 +1,9 @@
+# data science
+numpy
+pandas
+spacy
+unidecode
+nltk
+transformers
+fastapi
+uvicorn
