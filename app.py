@@ -55,6 +55,7 @@ if prediction == True:
     imag1 = Image.open(os.path.join(path_folder, images[0]))
     st.image(imag1, width=200)
 
+
 #   keys = auteurs.keys()
 #  values = auteurs.values()
 
