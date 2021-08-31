@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from numpy.lib.index_tricks import AxisConcatenator
 import pandas as pd
+from tensorflow.python.ops.math_ops import argmax
 from author_style.utils import tokenizer_word2vec
 import numpy as np
 from author_style.utils import embed_sentence
@@ -9,6 +10,13 @@ from author_style.preprocessing import preprocess
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from tensorflow.keras.models import load_model
 from gensim.models import Word2Vec
+from author_style.model import create_model
+from transformers import AutoTokenizer
+import os
+import numpy as np
+
+root_path=__file__
+model_path=os.path.join(os.path.dirname(root_path), 'model_camembert')
 
 app = FastAPI()
 
@@ -28,18 +36,25 @@ def index():
 
 @app.get("/predict")
 def predict(paragraph):
-    paragraph=preprocess(paragraph)
-    X_pred = tokenizer_word2vec(paragraph)
-    embedd = Word2Vec(X_pred, min_count=6, size=40)
-    X_pred=embed_sentence(embedd, X_pred)
-    X_pred = pad_sequences(X_pred,
-                           dtype='float32',
-                           padding='post',
-                           maxlen=300)
-    model = load_model('model')
-    y_pred = model.predict(X_pred)
-    return {'prediction': y_pred[0]}
+    LONGUEUR_MAX_PARAGRAPH = 512
+    model=create_model()
+    model.load_weights(model_path)
 
+    X_pred=[paragraph]
+    #instancier le tokenizeur
+    tokenizer = AutoTokenizer.from_pretrained('jplu/tf-camembert-base')
+    X_pred_token = tokenizer(X_pred,
+                                       max_length=LONGUEUR_MAX_PARAGRAPH,
+                                       padding="max_length",
+                                       truncation=True,
+                                       return_tensors='tf',
+                                       add_special_tokens=True)
 
-    #inputs_ids = np.array(X_pred['input_ids'])
-    #attention_mask = np.array(X_pred['attention_mask'])
+    inputs_ids = np.array(X_pred_token['input_ids'])
+    attention_mask = np.array(X_pred_token['attention_mask'])
+
+    pred = model.predict([inputs_ids, attention_mask])
+
+    return {
+        'prediction': np.argmax(pred)
+    }
