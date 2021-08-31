@@ -191,7 +191,7 @@ def csv_to_dataframes(output='ps', folder='comp_aut', MAX_LEN=512):
     df_sentences.rename(mapper={0:"text", 1: 'author', 2:'title', 3 : 'book_date'}, axis=1, inplace=True)
 
     ###############y########################################
-    ########   convert df_sentences to df_chunks    ########
+    ########   convert df_paragraphs to df_chunks    ########
     #######################################b################
 
     # Initializing a list of dataframes
@@ -204,8 +204,8 @@ def csv_to_dataframes(output='ps', folder='comp_aut', MAX_LEN=512):
             res.append(sentence[i:i+size])
         return res
 
-    for title in df_sentences.title.unique().tolist():
-        new_list = " [sep] ".join(df_sentences[df_sentences.title == str(title)].text.to_list()).split(' ')
+    for title in df_paragraphs.title.unique().tolist():
+        new_list = " [sep] ".join(df_paragraphs[df_paragraphs.title == str(title)].text.to_list()).split(' ')
         chunked_new_list = split_sentence(new_list, MAX_LEN)
 
         texts = [" ".join(chunk) for chunk in chunked_new_list]
@@ -213,10 +213,10 @@ def csv_to_dataframes(output='ps', folder='comp_aut', MAX_LEN=512):
         # Prepare columns with fixed values for Author_name, Title and Book_date,
         # to assign each sentence of a paragraph to the same Author_name, Title and Book_date.
 
-        author_temp = [list(df_sentences[df_sentences.title == str(title)].author.unique())[0]
+        author_temp = [list(df_paragraphs[df_paragraphs.title == str(title)].author.unique())[0]
                             for k in range(len(chunked_new_list))]
         title_temp = [str(title) for k in range(len(chunked_new_list))]
-        date_temp = [list(df_sentences[df_sentences.title == str(title)].book_date.unique())[0]
+        date_temp = [list(df_paragraphs[df_paragraphs.title == str(title)].book_date.unique())[0]
                             for k in range(len(chunked_new_list))]
         # Concatenate the 4 previous lists to build a single dataframe
         # containing all sentences of the i-th paragraph of df_paragraphs
