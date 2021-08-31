@@ -54,7 +54,7 @@ def clean_texts():
                     writer.writerow([new_line])
 
 
-def clean_texts2():
+def clean_texts_large():
 
     folders = [f for f in os.listdir(path_folder)]
     for folder in folders:
@@ -81,7 +81,7 @@ def clean_texts2():
                 lenghts[index] = lenght
             indexes = list(k for k, v in sorted(lenghts.items(),
                                                 key=lambda item: item[1],
-                                                reverse=True))[0:400]
+                                                reverse=True)) #[0:400]
 
             new_lines = []
             for index in indexes:
@@ -99,7 +99,7 @@ def clean_texts2():
                     writer.writerow([new_line])
 
 
-def csv_to_dataframes(output='ps',folder='comp_aut'):
+def csv_to_dataframes(output='ps', folder='comp_aut', MAX_LEN=512):
     ''' Returns 2 dataframes
     args:
     output = 'ps' - returns 2 dataframes
@@ -190,12 +190,53 @@ def csv_to_dataframes(output='ps',folder='comp_aut'):
     df_sentences = pd.concat(dfs, ignore_index = True, axis=0)
     df_sentences.rename(mapper={0:"text", 1: 'author', 2:'title', 3 : 'book_date'}, axis=1, inplace=True)
 
+    ###############y########################################
+    ########   convert df_sentences to df_chunks    ########
+    #######################################b################
+
+    # Initializing a list of dataframes
+    dfs = []
+
+    # Function to split sentences into chunks of fixed word_count
+    def split_sentence(sentence, size):
+        res = []
+        for i in range (0, len(sentence), size):
+            res.append(sentence[i:i+size])
+        return res
+
+    for title in df_sentences.title.unique().tolist():
+        new_list = " [sep] ".join(df_sentences[df_sentences.title == str(title)].text.to_list()).split(' ')
+        chunked_new_list = split_sentence(new_list, MAX_LEN)
+
+        texts = [" ".join(chunk) for chunk in chunked_new_list]
+
+        # Prepare columns with fixed values for Author_name, Title and Book_date,
+        # to assign each sentence of a paragraph to the same Author_name, Title and Book_date.
+
+        author_temp = [list(df_sentences[df_sentences.title == str(title)].author.unique())[0]
+                            for k in range(len(chunked_new_list))]
+        title_temp = [str(title) for k in range(len(chunked_new_list))]
+        date_temp = [list(df_sentences[df_sentences.title == str(title)].book_date.unique())[0]
+                            for k in range(len(chunked_new_list))]
+        # Concatenate the 4 previous lists to build a single dataframe
+        # containing all sentences of the i-th paragraph of df_paragraphs
+        data = [texts, author_temp, title_temp, date_temp]
+        df_temp = pd.DataFrame(data).T
+
+        # Build the list of dataframes containing all sentences of our dataset
+        dfs.append(df_temp)
+
+    df_chunks = pd.concat(dfs, ignore_index = True, axis=0)
+    df_chunks.rename(mapper={0:"text", 1: 'author', 2:'title', 3 : 'book_date'}, axis=1, inplace=True)
+
     if output == 'p':
         return df_paragraphs
     if output == 's':
         return df_sentences
     if output == 'ps':
         return df_paragraphs, df_sentences
+    if output == 'c':
+        return df_chunks
 
 if __name__=='__main__':
     clean_texts()
