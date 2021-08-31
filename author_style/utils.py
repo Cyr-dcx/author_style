@@ -1,6 +1,14 @@
 import os
 import pandas as pd
 import csv
+#from transformers import AutoTokenizer
+from nltk.stem.porter import PorterStemmer
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
+import nltk
+from nltk.corpus import wordnet
+import numpy as np
+
 
 
 root_path = os.path.dirname(os.path.dirname(__file__))
@@ -196,6 +204,55 @@ def csv_to_dataframes(output='ps',folder='comp_aut'):
         return df_sentences
     if output == 'ps':
         return df_paragraphs, df_sentences
+
+"""def tokenizer(X):
+    LONGUEUR_MAX_PARAGRAPH = 512
+    tokenizer = AutoTokenizer.from_pretrained('jplu/tf-camembert-base')
+    X = tokenizer(X,
+                                       max_length=LONGUEUR_MAX_PARAGRAPH,
+                                       padding="max_length",
+                                       truncation=True,
+                                       return_tensors='tf',
+                                       add_special_tokens=True)
+
+    return X
+"""
+
+def tokenizer_word2vec(X):
+    try:
+        nltk.data.find('punkt')
+        nltk.data.find('stopwords')
+        nltk.data.find('averaged_perceptron_tagger')
+        nltk.data.find('wordnet')
+    except LookupError:
+        nltk.download('punkt', quiet=True)
+        nltk.download('stopwords', quiet=True)
+        nltk.download('averaged_perceptron_tagger', quiet=True)
+        nltk.download('wordnet', quiet=True)
+
+    X_token = [word_tokenize(list(elem)[0]) for elem in X]
+    return X_token
+
+def embed_sentence(word2vec, sentence):
+    # $CHALLENGIFY_BEGIN
+    embedded_sentence = []
+    for word in sentence:
+        if word in word2vec.wv:
+            embedded_sentence.append(word2vec.wv[word])
+
+    return np.array(embedded_sentence)
+
+
+def embedding(word2vec, sentences):
+    # $CHALLENGIFY_BEGIN
+    embed = []
+
+    for sentence in sentences:
+        embedded_sentence = embed_sentence(word2vec, sentence)
+        embed.append(embedded_sentence)
+
+    return embed
+
 
 if __name__=='__main__':
     clean_texts()

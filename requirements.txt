@@ -5,12 +5,15 @@ twine
 wheel>=0.29
 
 # data science
-numpy
+numpy==1.20.0
 pandas
-scikit-learn
+tensorflow
 spacy
 unidecode
 nltk
+transformers
+fastapi
+uvicorn
 
 # tests/linter
 black
