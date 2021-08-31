@@ -50,10 +50,10 @@ if prediction == True:
 
     root_path = os.path.dirname(__file__)
     path_folder = os.path.join(root_path, 'Auteurs_photos')
-    images = [images for images in os.listdir(path_folder)]
+    images = [image for image in os.listdir(path_folder)]
 
-    image = Image.open(os.path.join(path_folder, images[0]))
-    st.image(images[0], width=200)
+    imag1 = Image.open(os.path.join(path_folder, images[0]))
+    st.image(imag1, width=200)
 
 #   keys = auteurs.keys()
 #  values = auteurs.values()
