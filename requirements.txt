@@ -5,7 +5,7 @@ twine
 wheel>=0.29
 
 # data science
-numpy
+numpy==1.20.0
 pandas
 tensorflow
 spacy

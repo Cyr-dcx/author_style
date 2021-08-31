@@ -10,6 +10,7 @@ from nltk.corpus import wordnet
 import numpy as np
 
 
+
 root_path = os.path.dirname(os.path.dirname(__file__))
 path_folder = os.path.join(root_path, 'raw_data')
 
@@ -182,8 +183,6 @@ def tokenizer_word2vec(X):
 
     X_token = [word_tokenize(list(elem)[0]) for elem in X]
     return X_token
-
-
 
 def embed_sentence(word2vec, sentence):
     # $CHALLENGIFY_BEGIN
