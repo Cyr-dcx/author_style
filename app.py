@@ -52,7 +52,9 @@ if prediction == True:
     path_folder = os.path.join(root_path, 'Auteurs_photos')
     images = [image for image in os.listdir(path_folder)]
 
-    imag1 = Image.open(os.path.join(path_folder, images[0]))
+    max = max(auteurs.values())
+
+    imag1 = Image.open(os.path.join(path_folder, images[max(auteurs)]))
     st.image(imag1, width=200)
 
 

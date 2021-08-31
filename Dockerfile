@@ -1,6 +1,6 @@
 FROM python:3.8.6-buster
 
-COPY model /model
+COPY model_camembert /model_camembert
 COPY author_style /author_style
 COPY api /api
 COPY requirements.txt /requirements.txt
