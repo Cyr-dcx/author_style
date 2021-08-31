@@ -226,8 +226,8 @@ def csv_to_dataframes(output='ps', folder='comp_aut', MAX_LEN=512):
         # Build the list of dataframes containing all sentences of our dataset
         dfs.append(df_temp)
 
-    df_chunks = pd.concat(dfs, ignore_index = True, axis=0)
-    df_chunks.rename(mapper={0:"text", 1: 'author', 2:'title', 3 : 'book_date'}, axis=1, inplace=True)
+        df_chunks = pd.concat(dfs, ignore_index = True, axis=0)
+        df_chunks.rename(mapper={0:"text", 1: 'author', 2:'title', 3 : 'book_date'}, axis=1, inplace=True)
 
     if output == 'p':
         return df_paragraphs
