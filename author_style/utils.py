@@ -74,9 +74,9 @@ def clean_texts_large():
             with open(os.path.join(path, book)) as f:
                 lines = f.readlines()
             #remove begining and ending (15 %)
-            ten_percent = int(len(lines) * 0.15)
-            del lines[len(lines) - ten_percent:len(lines)]
-            del lines[0:ten_percent]
+            #ten_percent = int(len(lines) * 0.15)
+            #del lines[len(lines) - ten_percent:len(lines)]
+            #del lines[0:ten_percent]
 
             #keeping the 300 biggest paragraphs
             lenghts = {}
@@ -258,41 +258,6 @@ def csv_to_dataframes(output='ps', folder='comp_aut', MAX_LEN=512):
 
     return X
 """
-
-def tokenizer_word2vec(X):
-    try:
-        nltk.data.find('punkt')
-        nltk.data.find('stopwords')
-        nltk.data.find('averaged_perceptron_tagger')
-        nltk.data.find('wordnet')
-    except LookupError:
-        nltk.download('punkt', quiet=True)
-        nltk.download('stopwords', quiet=True)
-        nltk.download('averaged_perceptron_tagger', quiet=True)
-        nltk.download('wordnet', quiet=True)
-
-    X_token = [word_tokenize(list(elem)[0]) for elem in X]
-    return X_token
-
-def embed_sentence(word2vec, sentence):
-    # $CHALLENGIFY_BEGIN
-    embedded_sentence = []
-    for word in sentence:
-        if word in word2vec.wv:
-            embedded_sentence.append(word2vec.wv[word])
-
-    return np.array(embedded_sentence)
-
-
-def embedding(word2vec, sentences):
-    # $CHALLENGIFY_BEGIN
-    embed = []
-
-    for sentence in sentences:
-        embedded_sentence = embed_sentence(word2vec, sentence)
-        embed.append(embedded_sentence)
-
-    return embed
 
 
 if __name__=='__main__':
