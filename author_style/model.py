@@ -33,7 +33,7 @@ def create_model():
     l1 = Lambda(lambda seq: seq[:, 0, :])(
         sortie_camemBERT)  #pour ne récupérer que les vecteurs CLS
     dense3 = Dense(128, activation='relu')(l1)
-    output = Dense(21, activation='softmax')(dense3)
+    output = Dense(20, activation='softmax')(dense3)
     print(output.shape)
     model = tf.keras.Model(inputs=[entrees_ids, entrees_masks], outputs=output)
     model.layers[2].trainable = False  #Désactive l'entraînement de camemBERT
