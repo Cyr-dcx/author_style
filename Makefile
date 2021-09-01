@@ -58,12 +58,15 @@ pypi:
 ##### Prediction API - - - - - - - - - - - - - - - - - - - - - - - - -
 
 run_api:
-	uvicorn api.fast:app --reload  
+	uvicorn api.fast:app --reload
 
 #load web server with code autoreload
 
 # build_amd:
 # 	docker buildx build --platform linux/amd64 -t api_amd64 --load .
+
+build_test:
+	docker build -t eu.gcr.io/author-style/api .
 
 build_amd_prod:
 	docker buildx build --platform linux/amd64 -t eu.gcr.io/author-style/api_amd64 --load .
