@@ -8,13 +8,12 @@ wheel>=0.29
 numpy==1.20.0
 pandas
 tensorflow
-spacy
 unidecode
 nltk
 transformers
 fastapi
 uvicorn
-gensim 
+gensim
 SentencePiece
 
 
