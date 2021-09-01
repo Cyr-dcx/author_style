@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from numpy.lib.index_tricks import AxisConcatenator
+from numpy.lib.index_tricks import AxisConcatenat
 import pandas as pd
 from tensorflow.python.ops.math_ops import argmax
 from author_style.utils import tokenizer_word2vec
