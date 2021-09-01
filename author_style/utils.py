@@ -74,9 +74,9 @@ def clean_texts_large():
             with open(os.path.join(path, book)) as f:
                 lines = f.readlines()
             #remove begining and ending (15 %)
-            ten_percent = int(len(lines) * 0.15)
-            del lines[len(lines) - ten_percent:len(lines)]
-            del lines[0:ten_percent]
+            #ten_percent = int(len(lines) * 0.15)
+            #del lines[len(lines) - ten_percent:len(lines)]
+            #del lines[0:ten_percent]
 
             #keeping the 300 biggest paragraphs
             lenghts = {}
@@ -258,7 +258,6 @@ def csv_to_dataframes(output='ps', folder='comp_aut', MAX_LEN=512):
 
     return X
 """
-
 
 
 if __name__=='__main__':
