@@ -27,15 +27,6 @@ def create_model():
                                           name='masked_token',
                                           dtype='int32')
     #Création de la sortie du modèle
-    sortie_camemBERT = transformer_model([entrees_ids, entrees_masks])
-    #Définition du format d'entrée du modèle
-    entrees_ids = tf.keras.layers.Input(shape=(LONGUEUR_MAX_PARAGRAPH, ),
-                                        name='input_token',
-                                        dtype='int32')
-    entrees_masks = tf.keras.layers.Input(shape=(LONGUEUR_MAX_PARAGRAPH, ),
-                                          name='masked_token',
-                                          dtype='int32')
-    #Création de la sortie du modèle
     sortie_camemBERT = transformer_model([entrees_ids, entrees_masks])[0]
     print(sortie_camemBERT.shape)
     print(sortie_camemBERT)
