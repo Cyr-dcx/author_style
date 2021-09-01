@@ -43,4 +43,26 @@ def predict(paragraph):
     inputs_ids = np.array(X_pred_token['input_ids'])
     attention_mask = np.array(X_pred_token['attention_mask'])
     pred = model.predict([inputs_ids, attention_mask])
-    return {'prediction': pred[0].item(0)}
+    return {
+        'prediction': {
+            'BAZIN Herve': round(pred[0].item(0),4),
+            'CAMUS Albert': round(pred[0].item(1),4),
+            'CELINE Louis-Ferdinand': round(pred[0].item(2),4),
+            'COHEN Albert': round(pred[0].item(3),4),
+            'DEBEAUVOIR Simone': round(pred[0].item(4),4),
+            'DURAS Marguerite': round(pred[0].item(5),4),
+            'ECHENOZ Jean': round(pred[0].item(6),4),
+            'GARY Romain': round(pred[0].item(7),4),
+            'GIONO Jean': round(pred[0].item(8),4),
+            'GUTH Paul': round(pred[0].item(9),4),
+            'JOFFO Joseph': round(pred[0].item(10),4),
+            'KESSEL Joseph': round(pred[0].item(11),4),
+            'MODIANO Patrick': round(pred[0].item(12),4),
+            'PEREC Georges': round(pred[0].item(13),4),
+            'QUEFFELEC Henri': round(pred[0].item(14),4),
+            'QUEFFELEC Yann': round(pred[0].item(15),4),
+            'SARRAUTE Nathalie': round(pred[0].item(16),4),
+            'SCHOENDOERFFER Pierre': round(pred[0].item(17),4),
+            'VIAN Boris':round(pred[0].item(18),4),
+            'YOURCENAR Marguerite': round(pred[0].item(19),4),
+        }}
